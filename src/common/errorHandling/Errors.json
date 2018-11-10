@@ -1,0 +1,17 @@
+{
+  "UserNotFoundException": {
+    "code": 1000,
+    "name": "ObjectNotFoundException",
+    "message": "El usuario con nombre $name no existe"
+  },
+  "ValidateRequestException": {
+    "code": 2000,
+    "name": "ValidationException",
+    "message": "El objeto no cumple con los requisitos"
+  },
+  "LoginException":{
+    "code": 3000,
+    "name": "AuthenticationException",
+    "message": "El usuario no coincide con la contraseña"
+  }
+}
