@@ -1,0 +1,14 @@
+{
+  "mongo": {
+    "url": "mongodb://localhost:27017",
+    "db": "dbMicap"
+  },
+  "mongoTest": {
+    "url": "mongodb://localhost:27017",
+    "db": "dbMicapTest"
+  },
+  "port": {
+    "authentication":3000,
+    "userManagement":3001
+  }
+}
