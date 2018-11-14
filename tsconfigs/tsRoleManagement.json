@@ -1,13 +1,13 @@
 {
   "include": [
-    "../global/user_management",
+    "../global/role_management",
     "../global/common"
   ],
   "exclude": [
     "../node_modules"
   ],
   "compilerOptions": {
-    "outDir": "../dist/user_management",    // "rootDir": "./",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+    "outDir": "../dist/role_management",    // "rootDir": "./",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
 
     /* Basic Options */
     "target": "es6",                          /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017','ES2018' or 'ESNEXT'. */

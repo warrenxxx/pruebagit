@@ -1,6 +1,8 @@
 import MongoConfig from '../config/mongo.config';
 
 export class AppError implements Error {
+
+
     public errorCode: Number;
     public errorNameException: string;
     public message: string;

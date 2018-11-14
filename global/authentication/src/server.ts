@@ -1,17 +1,9 @@
 import * as bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
-
-import {ObjectId} from 'bson';
-
-import {AccountDao} from './dao/account.dao';
 import {AuthenticationController} from './controller/authentication.controller';
 import config from '../../enviroments.json';
 import MongoConfig from '../../common/src/config/mongo.config';
-import {FunctionRule, RoleModel} from '../../common/src/models/role.model';
-import {AuditModel} from '../../common/src/models/audit.model';
-import {AccountModel} from '../../common/src/models/account.model';
-
 
 const controller = new AuthenticationController();
 
@@ -32,7 +24,7 @@ class Server {
         this.app.use(cors());
 
         this.app.use((req, res, next) => {
-            res.header('Access-Control-Allow-Origin', 'http://localhost:8080');
+            res.header('Access-Control-Allow-Origin', 'http://localhost:4200');
             res.header(
                 'Access-Control-Allow-Methods',
                 'GET, POST, PUT, DELETE, OPTIONS',

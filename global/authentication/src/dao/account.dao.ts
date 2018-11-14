@@ -1,7 +1,7 @@
 import {BaseMongoImpDao} from '../../../common/src/repository/baseMongoImp.dao';
-import {AccountModel} from '../../../common/src/models/account.model';
+import {AccountModel} from '../../../common/src/models/accountModel';
 import MongoConfig from '../../../common/src/config/mongo.config';
-import {FunctionRule} from '../../../common/src/models/role.model';
+import {FunctionModel} from '../../../common/src/models/functionModel';
 
 export class AccountDao extends BaseMongoImpDao<AccountModel> {
     constructor() {
@@ -14,7 +14,7 @@ export class AccountDao extends BaseMongoImpDao<AccountModel> {
             .findOne({'userName': x});
     }
 
-    getAllFunctions(userName: string): Promise<FunctionRule[]> {
+    getAllFunctions(userName: string): Promise<FunctionModel[]> {
         return MongoConfig.db
             .collection(this.collection)
             .aggregate([

@@ -1,6 +1,6 @@
 import {AuditModel} from './audit.model';
 import {ObjectId} from 'bson';
-import {FunctionRule} from './role.model';
+import {FunctionModel} from './functionModel';
 
 export interface AccountModel {
     _id: ObjectId;

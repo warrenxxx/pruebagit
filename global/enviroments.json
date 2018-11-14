@@ -9,6 +9,8 @@
   },
   "port": {
     "authentication":3000,
-    "userManagement":3001
+    "userManagement":3001,
+    "roleManagement":3002,
+    "functionManagement":3003
   }
 }

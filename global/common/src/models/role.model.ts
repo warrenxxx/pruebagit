@@ -11,13 +11,3 @@ export interface RoleModel {
     audit: AuditModel;
 }
 
-export interface FunctionRule {
-    _id: {
-        method: string,
-        path: string,
-    };
-    name: string;
-    cod: string;
-    description: string;
-    audit: AuditModel;
-}

@@ -2,32 +2,15 @@ import 'mocha';
 import * as assert from 'assert';
 import MongoConfig from '../../common/src/config/mongo.config';
 import config from '../../enviroments.json';
-import {FunctionRule, RoleModel} from '../../common/src/models/role.model';
+import {RoleModel} from '../../common/src/models/role.model';
 import {AuditModel} from '../../common/src/models/audit.model';
 import {ObjectId} from 'bson';
-import {AccountModel} from '../../common/src/models/account.model';
+import {AccountModel} from '../../common/src/models/accountModel';
 import {AccountDao} from '../src/dao/account.dao';
+import {FunctionModel} from '../../common/src/models/functionModel';
 
-const functions: FunctionRule[] = [
-    {_id: {method: 'post', path: '/user'}, cod: 'usrins', description: 'inserta un usuario', name: 'insert user', audit: new AuditModel()},
-    {_id: {method: 'get', path: '/user'}, cod: 'usrreo', description: 'obtiene un usuario', name: 'read user', audit: new AuditModel()},
-    {_id: {method: 'get', path: '/user/all'}, cod: 'usrrea', description: 'obtiene todos los usuario', name: 'read all users', audit: new AuditModel()},
-    {_id: {method: 'update', path: '/user   '}, cod: 'usrupd', description: 'actualiza un usuario', name: 'update user', audit: new AuditModel()},
-    {_id: {method: 'remove', path: '/user'}, cod: 'usrrem', description: 'elimina un usuario', name: 'remove user', audit: new AuditModel()},
-
-    {_id: {method: 'post', path: '/role'}, cod: 'rolins', description: 'inserta un rol', name: 'insert role', audit: new AuditModel()},
-    {_id: {method: 'get', path: '/role'}, cod: 'rolreo', description: 'obtiene un rol', name: 'read role', audit: new AuditModel()},
-    {_id: {method: 'get', path: '/role/all'}, cod: 'rolrea', description: 'obtiene todos los roles', name: 'read all roles', audit: new AuditModel()},
-    {_id: {method: 'update', path: '/role'}, cod: 'rolupd', description: 'actualiza un rol', name: 'update role', audit: new AuditModel()},
-    {_id: {method: 'remove', path: '/role'}, cod: 'rolrem', description: 'elimina un rol', name: 'remove role', audit: new AuditModel()},
-
-    {_id: {method: 'post', path: '/microlesson'}, cod: 'mcrins', description: 'inserta un microleccion', name: 'insert microlesson', audit: new AuditModel()},
-    {_id: {method: 'get', path: '/microlesson'}, cod: 'mcrreo', description: 'obtiene un microleccion', name: 'read microlesson', audit: new AuditModel()},
-    {_id: {method: 'get', path: '/microlesson/all'}, cod: 'mcrrea', description: 'obtiene todos los microleccion', name: 'read all microlessons', audit: new AuditModel()},
-    {_id: {method: 'update', path: '/microlesson'}, cod: 'mcrupd', description: 'actualiza un microleccion', name: 'update microlesson', audit: new AuditModel()},
-    {_id: {method: 'remove', path: '/microlesson'}, cod: 'mcrrem', description: 'elimina un microleccion', name: 'remove microlesson', audit: new AuditModel()},
-
-];
+import zeed from '../../zeed.data.json';
+const functions: FunctionModel[] = zeed.functions;
 
 const roles: RoleModel[] = [
     {
@@ -107,22 +90,6 @@ describe('dao', () => {
             .then(e => MongoConfig.db.collection('functions').find({}).toArray())
             .then(e => assert.equal(e.length, 15));
     });
-    it('find by userName', () => {
-        return dao.findByUserName('warrenxxx1').then(e => assert.strictEqual(e.email, 'warren_x_x1@gmail.com'));
-    });
-    it('get all Functions', () => {
-        return dao.getAllFunctions('warrenxxx1').then(e => e.map(value => value.cod).sort())
-            .then(e => assert.deepStrictEqual(e, ['usrins', 'usrrea', 'usrreo', 'usrupd', 'usrrem', 'mcrrea', 'mcrreo'].sort(), 'warren 1'))
-            .then(e => dao.getAllFunctions('warrenxxx2')).then(e => e.map(value => value.cod).sort())
-            .then(e => assert.deepStrictEqual(e,
-                    [
-                        'usrins', 'usrrea', 'usrreo', 'usrupd', 'usrrem', 'mcrins', 'mcrrea', 'mcrreo', 'mcrupd', 'mcrrem', 'rolins', 'rolrea', 'rolreo', 'rolupd', 'rolrem'].sort(), 'warren 2'))
-            .then(e => dao.getAllFunctions('warrenxxx3')).then(e => e.map(value => value.cod).sort()).then(e =>
-                assert.deepStrictEqual(e,
-                    ['usrins', 'usrrea', 'usrreo', 'usrupd', 'usrrem', 'mcrins', 'mcrrea', 'mcrreo', 'mcrupd', 'mcrrem', 'rolupd'].sort(), 'warren 3'))
-            .then(e => dao.getAllFunctions('warrenxxx4')).then(e => e.map(value => value.cod).sort()).then(e =>
-                assert.deepStrictEqual(e,
-                    ['usrrea'].sort(), 'warren 4'))
-            ;
-    });
+
+
 });

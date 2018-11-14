@@ -1,0 +1,159 @@
+{
+  "functions": [
+    {
+      "_id": {
+        "method": "POST",
+        "path": "/account"
+      },
+      "cod": "usrins",
+      "description": "inserta un usuario",
+      "name": "insert user"
+    },
+    {
+      "_id": {
+        "method": "PUT",
+        "path": "/account"
+      },
+      "cod": "usrupd",
+      "description": "actualiza un usuario",
+      "name": "update user"
+    },
+    {
+      "_id": {
+        "method": "GET",
+        "path": "/account"
+      },
+      "cod": "usrreo",
+      "description": "obtiene un usuario",
+      "name": "read user"
+    },
+    {
+      "_id": {
+        "method": "GET",
+        "path": "/account/all"
+      },
+      "cod": "usrrea",
+      "description": "obtiene todos los usuario",
+      "name": "read all users"
+    },
+    {
+      "_id": {
+        "method": "REMOVE",
+        "path": "/account"
+      },
+      "cod": "usrrem",
+      "description": "elimina un usuario",
+      "name": "REMOVE user"
+    },
+    {
+      "_id": {
+        "method": "POST",
+        "path": "/role"
+      },
+      "cod": "rolins",
+      "description": "inserta un rol",
+      "name": "insert role"
+    },
+    {
+      "_id": {
+        "method": "GET",
+        "path": "/role"
+      },
+      "cod": "rolreo",
+      "description": "obtiene un rol",
+      "name": "read role"
+    },
+    {
+      "_id": {
+        "method": "GET",
+        "path": "/role/all"
+      },
+      "cod": "rolrea",
+      "description": "obtiene todos los roles",
+      "name": "read all roles"
+    },
+    {
+      "_id": {
+        "method": "PUT",
+        "path": "/role"
+      },
+      "cod": "rolupd",
+      "description": "actualiza un rol",
+      "name": "update role"
+    },
+    {
+      "_id": {
+        "method": "REMOVE",
+        "path": "/role"
+      },
+      "cod": "rolrem",
+      "description": "elimina un rol",
+      "name": "REMOVE role"
+    },
+    {
+      "_id": {
+        "method": "POST",
+        "path": "/microlesson"
+      },
+      "cod": "mcrins",
+      "description": "inserta un microleccion",
+      "name": "insert microlesson"
+    },
+    {
+      "_id": {
+        "method": "GET",
+        "path": "/microlesson"
+      },
+      "cod": "mcrreo",
+      "description": "obtiene un microleccion",
+      "name": "read microlesson"
+    },
+    {
+      "_id": {
+        "method": "GET",
+        "path": "/microlesson/all"
+      },
+      "cod": "mcrrea",
+      "description": "obtiene todos los microleccion",
+      "name": "read all microlessons"
+    },
+    {
+      "_id": {
+        "method": "PUT",
+        "path": "/microlesson"
+      },
+      "cod": "mcrupd",
+      "description": "actualiza un microleccion",
+      "name": "update microlesson"
+    },
+    {
+      "_id": {
+        "method": "REMOVE",
+        "path": "/microlesson"
+      },
+      "cod": "mcrrem",
+      "description": "elimina un microleccion",
+      "name": "REMOVE microlesson"
+    },
+
+    {
+      "_id": {
+        "method": "GET",
+        "path": "/functions"
+      },
+      "cod": "funreo",
+      "description": "obtiene una funcion en especifico",
+      "name": "read function"
+    },
+    {
+      "_id": {
+        "method": "GET",
+        "path": "/functions/all"
+      },
+      "cod": "funrea",
+      "description": "obtiene todos las funciones",
+      "name": "read all functions"
+    }
+
+  ]
+}

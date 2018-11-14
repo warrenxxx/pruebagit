@@ -9,12 +9,12 @@ export class ValidationError extends AppError {
 
     public static ValidateRequestException(errors: string): AppError {
         // @ts-ignore
-        const x: ErrorJson = error.ValidateRequestException;
+        const x: ErrorJson = error.ValidateRequestError;
         return new ValidationError(x.message + ' ' + errors, x.code, '');
     }
     public static ValidateObjectException(errors: string): AppError {
         // @ts-ignore
-        const x: ErrorJson = error.ValidateRequestException;
+        const x: ErrorJson = error.ValidateRequestError;
         return new ValidationError(x.message + ' ' + errors, x.code, '');
     }
 }

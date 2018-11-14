@@ -8,8 +8,14 @@ export class AuthenticationError extends AppError {
     }
 
     public static LoginError(userName: string): AppError {
-        const x: ErrorJson = error.LoginException;
+        const x: ErrorJson = error.LoginError;
         return new AuthenticationError(x.message, x.code, userName);
     }
+
+    public static TokenExpiration(): AppError {
+        const x: ErrorJson = error.TokenExpirationError;
+        return new AuthenticationError(x.message, x.code, '');
+    }
+
 }
 

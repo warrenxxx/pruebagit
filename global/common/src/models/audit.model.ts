@@ -12,4 +12,15 @@ export class AuditModel {
         this.modifiedBy = new ObjectID();
         this.createdBy = new ObjectID();
     }
+
+    public  newAudit(_id: string): void {
+        this.modifiedBy = new ObjectId(_id);
+        this.createdBy = new ObjectId(_id);
+        this.modifiedLocalDate = new Date();
+        this.createdLocalDate = new Date();
+    }
+    public actAudit(_id: string): void {
+        this.modifiedBy = new ObjectId(_id);
+        this.modifiedLocalDate = new Date();
+    }
 }

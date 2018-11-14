@@ -1,17 +1,37 @@
 {
-  "UserNotFoundException": {
+  "UserNotFoundError": {
     "code": 1000,
     "name": "ObjectNotFoundException",
     "message": "El usuario con nombre $name no existe"
   },
-  "ValidateRequestException": {
+  "ValidateRequestError": {
     "code": 2000,
     "name": "ValidationException",
     "message": "El objeto no cumple con los requisitos"
   },
-  "LoginException":{
+  "LoginError":{
     "code": 3000,
     "name": "AuthenticationException",
     "message": "El usuario no coincide con la contraseña"
+  },
+  "TokenExpirationError":{
+    "code": 3010,
+    "name": "AuthenticationException",
+    "message": "El token ingresado expiro"
+  },
+  "AuthorizationError":{
+    "code": 3020,
+    "name": "AuthorizationException",
+    "message": "El usuario no tiene permiso para acceder a $1"
+  },
+  "ObjectNullError":{
+    "code": 4000,
+    "name": "ObjectNullError",
+    "message": "El objeto es nulo = "
+  },
+  "HeaderError":{
+    "code": 5000,
+    "name": "HeaderError",
+    "message": "El header con el parametro : $1 no existe"
   }
 }

@@ -6,9 +6,16 @@
   "scripts": {
     "auth-w": "concurrently --kill-others \"tsc -w -p tsconfigs/tsAuthentication.json\" \" nodemon ./dist/authentication/authentication/src/index.js\"",
     "auth": "tsc -p tsconfigs/tsAuthentication.json && node ./dist/authentication/authentication/src/index.js",
-    "usr-w": "concurrently --kill-others \"tsc -w -p tsconfigs/tsUserManagement.json\" \" nodemon ./dist/user_management/user_management/src/index.js\"",
-    "usr": "tsc -p tsconfigs/tsUserManagement.json && node ./dist/user_management/user_management/src/index.js",
-    "test": "mocha  global/**/test/**/*.ts --exit --compilers ts-node/register --timeout 20000"
+    "acnt-w": "concurrently --kill-others \"tsc -w -p tsconfigs/tsAccountManagement.json\" \" nodemon ./dist/account_management/account_management/src/index.js\"",
+    "acnt": "tsc -p tsconfigs/tsAccountManagement.json && node ./dist/account_management/account_management/src/index.js",
+    "role-w": "concurrently --kill-others \"tsc -w -p tsconfigs/tsRoleManagement.json\" \" nodemon ./dist/role_management/role_management/src/index.js\"",
+    "role": "tsc -p tsconfigs/tsRoleManagement.json && node ./dist/role_management/role_management/src/index.js",
+    "func-w": "concurrently --kill-others \"tsc -w -p tsconfigs/tsFunctionManagement.json\" \" nodemon ./dist/function_management/function_management/src/index.js\"",
+    "func": "tsc -p tsconfigs/tsFunctionManagement.json && node ./dist/function_management/function_management/src/index.js",
+
+    "zeed": "tsc -p tsconfigs/tsZeedData.json && node ./dist/zeed_data/zeed_data/src/index.js",
+    "test": "mocha  global/**/test/**/*.ts --exit  --require ts-node/register --timeout 20000"
+
   },
   "author": "",
   "license": "ISC",
@@ -39,6 +46,7 @@
     "@types/node": "^10.12.3",
     "chai": "^4.2.0",
     "codelyzer": "^4.5.0",
+    "coffeescript": "^2.3.2",
     "mocha": "^5.2.0",
     "nodemon": "^1.18.6",
     "ts-node": "^7.0.1",

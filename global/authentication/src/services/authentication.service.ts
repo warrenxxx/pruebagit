@@ -4,9 +4,9 @@ import {AuthenticationError} from '../../../common/src/errorHandling/Exceptions/
 import {RegisterDto} from '../dto/register.dto';
 import {sign} from 'jsonwebtoken';
 import {ObjectId} from 'bson';
-import {AccountModel} from '../../../common/src/models/account.model';
+import {AccountModel} from '../../../common/src/models/accountModel';
 import {AuditModel} from '../../../common/src/models/audit.model';
-import {FunctionRule} from '../../../common/src/models/role.model';
+import {FunctionModel} from '../../../common/src/models/functionModel';
 
 export class AuthenticationService {
 
@@ -17,7 +17,7 @@ export class AuthenticationService {
 
     public async login(x: LoginDto): Promise<{
         jwt: string,
-        functions: FunctionRule[],
+        functions: FunctionModel[],
         account: AccountModel
     }> {
         return this.accountDao.findByUserName(x.user)
@@ -41,7 +41,7 @@ export class AuthenticationService {
 
     public async register(x: RegisterDto): Promise<{
         jwt: string,
-        functions: FunctionRule[],
+        functions: FunctionModel[],
         account: AccountModel
     }> {
         const account: AccountModel = {
@@ -72,7 +72,7 @@ async function tojwt(account: AccountModel): Promise<string> {
     };
     let res;
     try {
-        res = await sign({user}, 'secretkey gg', {expiresIn: '40s'});
+        res = await sign({user}, 'secretkey gg', {expiresIn: '40000s'});
     } catch (e) {
         throw  e;
     }

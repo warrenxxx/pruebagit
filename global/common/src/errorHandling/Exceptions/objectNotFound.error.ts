@@ -9,7 +9,7 @@ export class ObjectNotFoundError extends AppError {
 
     public static UserNotFoundException(userName: string): AppError {
         // @ts-ignore
-        const x: ErrorJson = error.UserNotFoundException;
+        const x: ErrorJson = error.UserNotFoundError;
         return new ObjectNotFoundError(x.message.replace('$name', userName), x.code, userName);
     }
 }
