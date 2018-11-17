@@ -1,9 +1,9 @@
-import {isString, isStringRegex} from '../../../common/src/utils/Validation';
-import {AccountModel, UserModel} from '../../../common/src/models/accountModel';
+import {isBoolean, isString} from '../../../common/src/utils/Validation';
+import {AccountModel} from '../../../common/src/models/accountModel';
 import {ObjectId} from 'bson';
 import {AuditModel} from '../../../common/src/models/audit.model';
 
-export interface AccountInsertDto {
+export interface AccountDto {
     userName: string;
     password: string;
     email: string;
@@ -13,9 +13,10 @@ export interface AccountInsertDto {
     gender: string;
     functions: string[];
     roles: string[];
+    enabled: boolean;
 }
 
-export const AccountInsertDtoRules: any = {
+export const AccountDtoRules: any = {
     userName: (x: any) => isString(x),
     password: (x: any) => isString(x),
     email: (x: any) => isString(x),
@@ -24,18 +25,19 @@ export const AccountInsertDtoRules: any = {
     birthDate: (x: any) => isString(x),
     gender: (x: any) => isString(x),
     functions: [(x: any) => isString(x)],
-    roles: [(x: any) => isString(x)]
+    roles: [(x: any) => isString(x)],
+    enabled: (x: any) => isBoolean(x)
 };
 
-export function insertToAccount(x: AccountInsertDto): AccountModel {
+export function dtoToAccount(x: AccountDto, id: ObjectId = new ObjectId()): AccountModel {
     return {
-        _id: new ObjectId(),
+        _id: id,
         userName: x.userName,
         password: x.password,
         email: x.email,
         roles: x.roles,
         functions: x.functions,
-        enabled: true,
+        enabled: x.enabled,
         user: {
             birthDate: x.birthDate,
             firstName: x.firstName,

@@ -22,12 +22,22 @@ export class BaseMongoService<T> {
 
     public async readOne(id: string): Promise<T> {
         if (id)
-            return this.dao.findById(id);
+            return this.dao.findById(id).then(value => {
+                if ((<any>value)['audit']) (<any>value)['audit'] = undefined;
+                if ((<any>value)['password']) (<any>value)['password'] = undefined;
+                return value;
+            });
         else throw ObjectNullError.ValidateRequestException('id');
     }
 
     public async readAll(): Promise<T[]> {
-        return this.dao.findAll();
+        return this.dao.findAll().then(e => {
+            e.forEach(value => {
+                if ((<any>value)['audit']) (<any>value)['audit'] = undefined;
+                if ((<any>value)['password']) (<any>value)['password'] = undefined;
+            });
+            return e;
+        });
     }
 
     public async update(x: T, _id: string): Promise<T> {

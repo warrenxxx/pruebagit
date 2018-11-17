@@ -7,6 +7,7 @@ export interface RoleModel {
     name: string;
     description: string;
     functions: string[];
+    prohibitsMethods: string[];
     isActive: boolean;
     audit: AuditModel;
 }

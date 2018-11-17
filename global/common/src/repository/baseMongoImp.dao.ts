@@ -21,6 +21,10 @@ export class BaseMongoImpDao<T> implements BaseDao<T> {
             .db
             .collection(this.collection)
             .find()
+            .map(e => {
+                e['audit'] = undefined;
+                return e;
+            })
             .toArray();
     }
 
@@ -48,16 +52,11 @@ export class BaseMongoImpDao<T> implements BaseDao<T> {
     }
 
     update(object: T): Promise<T> {
-        console.log(object);
-        console.log(new ObjectId((<any>object)['_id']));
+
         return MongoConfig
             .db
             .collection(this.collection)
-            .updateOne({'_id': new ObjectId((<any>object)['_id'])}, object)
-            .catch(e => {
-                console.log('www');
-                console.log(e);
-            })
+            .updateOne({'_id': new ObjectId((<any>object)['_id'])}, {$set: object})
             .then(e => object);
     }
 }

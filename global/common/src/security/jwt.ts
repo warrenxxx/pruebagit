@@ -22,6 +22,9 @@ export interface Req extends Request {
 
 export function fromJwt(req: Req, res: Response, next: Function): void {
 
+    console.log(req.baseUrl);
+    console.log('path', req.route.path);
+
     const auth: string = req.header('Authorization');
     if (auth) {
         try {
