@@ -1,9 +1,6 @@
 import {BaseMongoService} from '../../../common/src/service/base.mongo.service';
-import {RoleModel} from '../../../common/src/models/role.model';
 import {FunctionModel} from '../../../common/src/models/functionModel';
-import {LoginDto} from '../../../authentication/src/dto/login.dto';
 import {ObjectNullError} from '../../../common/src/errorHandling/Exceptions/objectNull.error';
-import {BaseMongoImpDao} from '../../../common/src/repository/baseMongoImp.dao';
 import {FunctionDao} from '../dao/function.dao';
 
 export class FunctionService extends BaseMongoService<FunctionModel> {
@@ -11,7 +8,6 @@ export class FunctionService extends BaseMongoService<FunctionModel> {
     private daoFunctions: FunctionDao;
 
     constructor() {
-
         super('function');
         this.daoFunctions = new FunctionDao();
     }

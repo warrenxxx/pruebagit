@@ -3,31 +3,16 @@ import {HeaderError} from '../errorHandling/Exceptions/header.error';
 import {AppResponse} from '../utils/AppResponse';
 import {sign, verify} from 'jsonwebtoken';
 import {AuthenticationError} from '../errorHandling/Exceptions/authentication.error';
-import {hasFuntions} from '../repository/jwt.dao';
 import {AuthorizationError} from '../errorHandling/Exceptions/authorization.error';
 import {AccountModel} from '../models/accountModel';
 import config from '../../../enviroments.json';
 import {FunctionModelBasic} from '../models/functionModel';
-import {emit} from 'cluster';
-
-function saniteUrl(x: string): string {
-    let res = '';
-    for (const i of x) {
-        if (i === '?') break;
-        res = res + i;
-    }
-    return res;
-}
-
 
 export interface Req extends Request {
     _id?: string;
     userName?:  { id: string, serverResource: string };
 }
 
-const mapMthod = {
-    '/': 'GET'
-};
 
 export function fromJwt(req: Req, res: Response, next: Function): any {
 
@@ -41,7 +26,7 @@ export function fromJwt(req: Req, res: Response, next: Function): any {
         try {
             const usr: any = verify(auth, config.privateKey);
 
-            if (entity === '/authentication' && path === '/refreshToken') {
+            if (entity === '/authentication' && path === '/refresh_token') {
                 req._id = usr.id;
                 req.userName = usr.userName;
                 return next();
