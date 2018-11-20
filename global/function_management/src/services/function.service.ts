@@ -18,7 +18,7 @@ export class FunctionService extends BaseMongoService<FunctionModel> {
 
     async readOne(id: string): Promise<FunctionModel> {
         if (id)
-            return this.daoFunctions.findById(id, false).then(value => {
+            return this.daoFunctions.findById(id).then(value => {
                 if ((<any>value)['audit']) (<any>value)['audit'] = undefined;
                 if ((<any>value)['password']) (<any>value)['password'] = undefined;
                 return value;
