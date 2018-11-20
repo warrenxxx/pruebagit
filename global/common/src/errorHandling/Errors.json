@@ -33,5 +33,10 @@
     "code": 5000,
     "name": "HeaderError",
     "message": "El header con el parametro : $1 no existe"
+  },
+  "SystemError":{
+    "code": 9000,
+    "name": "SystemError",
+    "message": "El sistema presenta el siguiente error : "
   }
 }

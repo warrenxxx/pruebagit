@@ -1,14 +1,13 @@
 import {AuditModel} from './audit.model';
 import {ObjectId} from 'bson';
-import {FunctionModel} from './functionModel';
 
 export interface AccountModel {
     _id: ObjectId;
-    userName: string;
+    userName: { id: string, serverResource: string };
     password: string;
     email: string;
     roles: string[];
-    functions: string[];
+    functions: { id: string, methods: ('c' | 'ro' | 'ra' | 'u' | 'd')[] }[];
     enabled: boolean;
     user: UserModel;
     audit: AuditModel;

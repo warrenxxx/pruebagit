@@ -8,9 +8,21 @@
     "db": "dbMicapTest"
   },
   "port": {
-    "authentication":3000,
-    "userManagement":3001,
-    "roleManagement":3002,
-    "functionManagement":3003
+    "authentication": 3000,
+    "userManagement": 3001,
+    "roleManagement": 3002,
+    "functionManagement": 3003
+  },
+  "privateKey": "clver princada con erroes",
+  "hostFront": "http://localhost:4200",
+  "oauth": {
+    "github": {
+      "clientId": "917d9ea48c6079361db7",
+      "secret": "95f840d74161b2031e5bc5ae030fdd6d9e4aa435"
+    },
+    "google": {
+      "clientId": "169588101511-s41mv83ehmd7d1e18liaos8uqrl1v505.apps.googleusercontent.com",
+      "secret": "UKCbrNz-s7fByse9LLYb2ynI"
+    }
   }
 }

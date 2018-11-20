@@ -1,29 +1,25 @@
+import {isBoolean, isString} from '../../../common/src/utils/Validation';
 import {ObjectId} from 'bson';
-import {isBoolean, isObjectId, isString} from '../../../common/src/utils/Validation';
-import {AccountModel} from '../../../common/src/models/accountModel';
 import {AuditModel} from '../../../common/src/models/audit.model';
 import {RoleModel} from '../../../common/src/models/role.model';
 
-export interface RoleUpdateDto {
-    _id: ObjectId;
+export interface RoleDto {
     name: string;
     description: string;
-    functions: string[];
+    functions: { id: string, methodsNegates: ('c' | 'ro' | 'ra' | 'u' | 'd')[] }[];
     isActive: boolean;
 }
 
-export const RoleUpdateDtoRules: any = {
-    _id: (x: any) => isObjectId(x),
+export const RoleDtoRules: any = {
     name: (x: any) => isString(x),
     description: (x: any) => isString(x),
     functions: [(x: any) => isString(x)],
-    isActive: (x: any) => isBoolean(x)
+    isActive: (x: any) => isBoolean(x),
 };
 
-
-export function updateToRole(x: RoleUpdateDto): RoleModel {
+export function dtoToRole(x: RoleDto): RoleModel {
     return {
-        _id: x._id,
+        _id: new ObjectId(),
         name: x.name,
         isActive: x.isActive,
         description: x.description,

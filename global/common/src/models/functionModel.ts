@@ -1,11 +1,15 @@
-import {AuditModel} from './audit.model';
-
 export interface FunctionModel {
-    _id: {
-        method: string,
-        path: string,
-    };
-    name: string;
-    cod: string;
+    _id: string;
     description: string;
+    methods: ('c' | 'ro' | 'ra' | 'u' | 'd')[];
+    other: string[];
 }
+
+export interface FunctionModelBasic {
+    _id: string;
+    methods: ('c' | 'ro' | 'ra' | 'u' | 'd')[];
+}
+
+
+
+

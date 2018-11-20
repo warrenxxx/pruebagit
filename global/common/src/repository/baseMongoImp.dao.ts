@@ -28,11 +28,11 @@ export class BaseMongoImpDao<T> implements BaseDao<T> {
             .toArray();
     }
 
-    findById(id: string): Promise<T | null> {
+    findById(id: string | ObjectId): Promise<T | null> {
         return MongoConfig
             .db
             .collection(this.collection)
-            .findOne({'_id': new ObjectId(id)});
+            .findOne({'_id': id});
     }
 
     insert(object: T): Promise<T> {
@@ -43,20 +43,24 @@ export class BaseMongoImpDao<T> implements BaseDao<T> {
             .then(e => e.ops[0]);
     }
 
-    removeById(id: string): Promise<number | undefined> {
+    removeById(id: string | ObjectId): Promise<number | undefined> {
         return MongoConfig
             .db
             .collection(this.collection)
-            .deleteOne({'_id': new ObjectId(id)})
+            .deleteOne({'_id': id})
             .then(e => e.deletedCount);
     }
 
     update(object: T): Promise<T> {
-
+        const id = (<any>object)['_id'];
+        // @ts-ignore
+        delete object._id;
         return MongoConfig
             .db
             .collection(this.collection)
-            .updateOne({'_id': new ObjectId((<any>object)['_id'])}, {$set: object})
-            .then(e => object);
+            .updateOne({'_id': id}, {$set: object})
+            .then(e => {
+                return object;
+            });
     }
 }

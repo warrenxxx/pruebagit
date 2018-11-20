@@ -1,4 +1,5 @@
 import {AppError} from '../errorHandling/app.error';
+import {SystemError} from '../errorHandling/Exceptions/system.error';
 
 export class AppResponse {
     private data: any;
@@ -24,10 +25,10 @@ export class AppResponse {
         }, null);
     }
 
-    public static errorResponse(err: AppError): AppResponse {
+    public static errorResponse(err: Error): AppResponse {
         if (err instanceof AppError)
             return new AppResponse(null, err);
         else
-            return new AppResponse(null, err);
+            return new AppResponse(null, SystemError.MessageError(err.message));
     }
 }

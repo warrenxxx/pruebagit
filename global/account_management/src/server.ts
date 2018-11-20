@@ -3,7 +3,6 @@ import cors from 'cors';
 import express from 'express';
 import {AccountController} from './controller/account.controller';
 import config from '../../enviroments.json';
-import zeedData from '../../zeed.data.json';
 import MongoConfig from '../../common/src/config/mongo.config';
 
 

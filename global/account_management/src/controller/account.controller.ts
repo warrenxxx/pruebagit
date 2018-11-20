@@ -5,6 +5,7 @@ import {AppResponse} from '../../../common/src/utils/AppResponse';
 import {AccountDtoRules, dtoToAccount} from '../dto/account..dto';
 
 import {fromJwt, Req} from '../../../common/src/security/jwt';
+import {ObjectId} from 'bson';
 
 const service = new AccountService();
 
@@ -30,7 +31,7 @@ export class AccountController {
     }
 
     public readOne(req: Request, res: Response): void {
-        service.readOne(req.params.id)
+        service.readOne(new ObjectId(req.params.id))
             .then(e => res.status(200).send(e))
             .catch(e => res.status(400).send(AppResponse.errorResponse(e)));
     }
@@ -43,17 +44,18 @@ export class AccountController {
 
     public update(req: Req, res: Response): void {
         Validate(req.body, AccountDtoRules)
-            .then(e => dtoToAccount(e, req.params.id))
+            .then(e => dtoToAccount(e, new ObjectId(req.params.id)))
             .then(e => service.update(e, req._id))
             .then(e => res.status(200).send(e))
             .catch(e => res.status(400).send(AppResponse.errorResponse(e)));
     }
 
     public delete(req: Request, res: Response): void {
-        service.delete(req.params.id)
-            .then(e => res.status(200).send(e))
+        service.delete(new ObjectId(req.params.id))
+            .then(e => res.status(200).send({count: e}))
             .catch(e => {
                 res.status(400).send(AppResponse.errorResponse(e));
+                throw e;
             });
     }
 }

@@ -20,7 +20,8 @@ export class BaseMongoService<T> {
         return this.dao.insert(x);
     }
 
-    public async readOne(id: string): Promise<T> {
+    public async readOne(id: string | ObjectId): Promise<T> {
+
         if (id)
             return this.dao.findById(id).then(value => {
                 if ((<any>value)['audit']) (<any>value)['audit'] = undefined;
@@ -42,11 +43,12 @@ export class BaseMongoService<T> {
 
     public async update(x: T, _id: string): Promise<T> {
         const aud: AuditModel = <AuditModel>((<any>x)['audit']);
+
         aud.actAudit(_id);
         return this.dao.update(x);
     }
 
-    public async delete(id: string): Promise<number | undefined> {
+    public async delete(id: string | ObjectId): Promise<number | undefined> {
         if (id)
             return this.dao.removeById(id);
         else throw ObjectNullError.ValidateRequestException('id');

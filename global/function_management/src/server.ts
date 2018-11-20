@@ -41,7 +41,7 @@ class Server {
     }
 
     public routes(): void {
-        this.app.use('/functions', controller.router);
+        this.app.use('/function', controller.router);
     }
 
 

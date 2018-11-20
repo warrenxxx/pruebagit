@@ -11,8 +11,8 @@ export class FunctionController {
 
     constructor() {
         this.router = Router();
-        this.router.get('/', fromJwt, this.readOne);
-        this.router.get('/all', fromJwt, this.readAll);
+        this.router.get('/:id', fromJwt, this.readOne);
+        this.router.get('/', fromJwt, this.readAll);
     }
 
     public readOne(req: Request, res: Response): void {

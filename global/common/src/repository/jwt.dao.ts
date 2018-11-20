@@ -2,7 +2,7 @@ import {ObjectId} from 'bson';
 import MongoConfig from '../config/mongo.config';
 
 export function hasFuntions(_id: string, path: string, method: string): Promise<any> {
-    console.log(_id, path, method);
+
     return MongoConfig.db.collection('account').aggregate([
 
         {$match: {_id: new ObjectId(_id)}},

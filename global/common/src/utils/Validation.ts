@@ -41,7 +41,7 @@ export function isDateTime(inp: any): null | any {
     return date.isValid() ? date.toDate() : null;
 }
 
-export function isValid(object: any, rules: any): any {
+export function     isValid(object: any, rules: any): any {
     const res: any = {};
     for (const param in rules) {
         if (validate.isArray(rules[param])) {
@@ -71,5 +71,3 @@ export function isValid(object: any, rules: any): any {
     return res;
 }
 
-// const x = isValid(amigo, rule);
-// console.log(x);

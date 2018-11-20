@@ -11,7 +11,7 @@ export interface AccountDto {
     lastName: string;
     birthDate: Date;
     gender: string;
-    functions: string[];
+    functions: { id: string, methods: ('c' | 'ro' | 'ra' | 'u' | 'd')[] }[];
     roles: string[];
     enabled: boolean;
 }
@@ -32,7 +32,7 @@ export const AccountDtoRules: any = {
 export function dtoToAccount(x: AccountDto, id: ObjectId = new ObjectId()): AccountModel {
     return {
         _id: id,
-        userName: x.userName,
+        userName: {id: x.userName, serverResource: 'local'},
         password: x.password,
         email: x.email,
         roles: x.roles,
