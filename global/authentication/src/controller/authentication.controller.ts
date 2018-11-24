@@ -1,14 +1,13 @@
 import {Request, Response, Router} from 'express';
 import {LoginDto, LoginDtoRules} from '../dto/login.dto';
-import {AuthenticationService} from '../services/authentication.service';
 import {RegisterDto, RegisterDtoRules} from '../dto/register.dto';
 import {Validate} from '../../../common/src/utils/Validation';
 import {AppResponse} from '../../../common/src/utils/AppResponse';
-import axios from 'axios';
 import {fromJwt, Req} from '../../../common/src/security/jwt';
 import config from '../../../enviroments.json';
-import * as querystring from 'querystring';
-
+import * as requestPromise from 'request-promise-native';
+import {AuthenticationService} from '../services/authentication.service';
+import moment from 'moment';
 
 const service = new AuthenticationService();
 
@@ -21,9 +20,10 @@ export class AuthenticationController {
         this.router.post('/login', this.login);
         this.router.post('/register', this.register);
         this.router.get('/refresh_token', fromJwt, this.refreshToken);
-        this.router.get('/github', this.accessTokenGitHub);
-        this.router.get('/google', this.accessTokenGoogle);
-        this.router.get('/googleCode', this.accessCodeGoogle);
+        this.router.get('/github', this.accessGitHub);
+        this.router.get('/google', this.accessGoogle);
+        this.router.get('/facebook', this.accessFacebook);
+
     }
 
     public refreshToken(req: Req, res: Response): void {
@@ -32,6 +32,7 @@ export class AuthenticationController {
             .catch(e => {
                 res.status(400).send(AppResponse.errorResponse(e));
             });
+
     }
 
     /*
@@ -58,62 +59,112 @@ export class AuthenticationController {
     /*
     External Authentication
      */
-    public accessTokenGitHub(req: Request, res: Response): void {
-        const requestToken = req.query.code;
-        axios.get(
-            `https://github.com/login/oauth/access_token?client_id=${config.oauth.github.clientId}&client_secret=${config.oauth.github.secret}&code=${requestToken}`,
-            {headers: {accept: 'application/json'}}
-        ).then((response) => axios.get(
-            'https://api.github.com/user',
-            {headers: {Authorization: 'token ' + response.data.access_token}}
-        )).then((e: any) => service.github(e.data.login))
+    public accessGitHub(req: Request, res: Response): void {
+        requestPromise.get({
+            url: `https://github.com/login/oauth/access_token?client_id=${config.oauth.github.clientId}&client_secret=${config.oauth.github.secret}&code=${req.query.code}`,
+            headers: {accept: 'application/json'},
+            json: true
+        })
+            .then(e => requestPromise.get(
+                {
+                    url: 'https://api.github.com/user',
+                    headers: {Authorization: 'token ' + e.access_token, 'user-agent': 'node.js'},
+                    json: true
+                }
+            ))
+            .then(e =>
+                service.registerAndLogin(
+                    e.login,
+                    e.email,
+                    'github',
+                    '',
+                    '',
+                    new Date(),
+                    '',
+                    e.avatar_url))
             .then(e => res.redirect(config.hostFront + '/pages/auth/login/' + e))
             .catch(e => {
-                throw e;
+                res.status(400).send(AppResponse.errorResponse(e));
             });
     }
 
-    public accessCodeGoogle(req: Request, res: Response): void {
-        console.log('otroooo');
-        console.log(req.query);
-        console.log(req.body);
-        res.send({ll: 'ss'});
-    }
 
-    public accessTokenGoogle(req: Request, res: Response): void {
-        const requestToken = req.query.code;
-        console.log(req.query);
-
-
-        axios.post(`https://www.googleapis.com/oauth2/v4/token`,
-            querystring.stringify({
-                code: req.query.code, //gave the values directly for testing
+    public accessGoogle(req: Request, res: Response): void {
+        requestPromise.post('https://www.googleapis.com/oauth2/v4/token', {
+            form: {
+                code: req.query.code,
                 client_id: config.oauth.google.clientId,
                 client_secret: config.oauth.google.secret,
-                redirect_uri: 'http://localhost:3000/authentication/googleCode',
+                redirect_uri: config.oauth.google.redirect_uri,
                 grant_type: 'authorization_code'
-            }), {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            json: true
+        }).then(
+            e => requestPromise.get(
+                {
+                    url: 'https://www.googleapis.com/plus/v1/people/me',
+                    headers: {
+                        'Authorization': 'Bearer ' + e.access_token
+                    },
+                    json: true
                 }
+            )
+        )
+            .then(e => {
+                console.log(e);
+                return e;
             })
-            .then((response) => {
-                console.log(response);
-                res.send(req.query);
-            }).catch(e => {
-            throw  e;
-        });
-        // axios.post(
-        //     `https://www.googleapis.com/oauth2/v4/token?code=${requestToken}&client_id=${config.oauth.google.clientId}&client_secret=${config.oauth.google.secret}&redirect_uri=https://oauth2.example.com/code&grant_type=authorization_code`,
-        //     {headers: {accept: 'application/json'}}
-        // ).then((response) => {
-        //     console.log(response);
-        // })
-        //     // .then((e: any) => service.google(e.data.login))
-        //     // .then(e => res.redirect(config.hostFront + '/pages/auth/login/' + e))
-        //     .catch(e => {
-        //         throw e;
-        //     })
-        // ;
+            .then(e =>
+                service.registerAndLogin(
+                    e.emails[0].value,
+                    e.emails[0].value,
+                    'google',
+                    e.name.givenName,
+                    e.name.familyName,
+                    new Date(),
+                    '',
+                    e.image.url.substring(0, e.image.url.length - 2) + '160'
+                ))
+            .then(e => res.redirect(config.hostFront + '/pages/auth/login/' + e))
+            .catch(e => {
+                res.status(400).send(AppResponse.errorResponse(e));
+            });
+    }
+
+    private accessFacebook(req: Req, res: Response): void {
+
+        requestPromise.post('https://graph.facebook.com/v3.2/oauth/access_token', {
+            form: {
+                code: req.query.code,
+                client_id: config.oauth.facebook.clientId,
+                client_secret: config.oauth.facebook.secret,
+                redirect_uri: config.oauth.facebook.redirect_uri
+            },
+            json: true
+        })
+            .then(
+                e => requestPromise.get(
+                    {
+                        url: 'https://graph.facebook.com/v3.2/me?fields=id%2Cname%2Caddress%2Cbirthday%2Cemail%2Cgender%2Cfirst_name%2Cpicture.type(large)%7Burl%7D%2Clast_name&access_token=' + e.access_token,
+                        json: true
+
+                    },
+                )
+            )
+            .then(e =>
+                service.registerAndLogin(
+                    e.email,
+                    e.email,
+                    'facebook',
+                    e.first_name,
+                    e.last_name,
+                    moment(e.birthday, 'MM/DD/YYYY').toDate(),
+                    e.gender,
+                    e.picture.data.url))
+            .then(e => res.redirect(config.hostFront + '/pages/auth/login/' + e))
+            .catch(e => {
+                res.status(400).send(AppResponse.errorResponse(e));
+            });
+
     }
 }

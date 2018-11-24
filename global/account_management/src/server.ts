@@ -4,7 +4,8 @@ import express from 'express';
 import {AccountController} from './controller/account.controller';
 import config from '../../enviroments.json';
 import MongoConfig from '../../common/src/config/mongo.config';
-
+import * as passport from 'passport';
+import * as fb from 'passport-facebook';
 
 const controller = new AccountController();
 
@@ -52,6 +53,7 @@ class Server {
     }
 
     public initPasspotRoutes(): void {
+
     }
 }
 

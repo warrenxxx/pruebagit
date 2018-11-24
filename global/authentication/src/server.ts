@@ -5,7 +5,10 @@ import {AuthenticationController} from './controller/authentication.controller';
 import config from '../../enviroments.json';
 import MongoConfig from '../../common/src/config/mongo.config';
 
+
+
 const controller = new AuthenticationController();
+
 
 class Server {
     public app: express.Application;

@@ -11,6 +11,7 @@ export interface AccountModel {
     enabled: boolean;
     user: UserModel;
     audit: AuditModel;
+    photo?: string;
 }
 
 export interface UserModel {

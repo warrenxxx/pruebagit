@@ -15,6 +15,31 @@ export class AuthenticationService {
     constructor() {
     }
 
+    public async register(x: RegisterDto): Promise<{
+        jwt: string,
+        functions: { _id: string, methods: string[] }[],
+        account: AccountModel
+    }> {
+        const account: AccountModel = {
+            password: x.password,
+            userName: {id: x.userName, serverResource: 'local'},
+            user: {
+                gender: x.gender,
+                lastName: x.lastName,
+                firstName: x.firstName,
+                birthDate: x.birthDate
+            },
+            _id: new ObjectId(),
+            email: x.email,
+            enabled: true,
+            functions: [],
+            roles: ['user'],
+            audit: new AuditModel()
+        };
+        return this.accountDao.insert(account)
+            .then(e => this.login({user: e.userName.id, password: e.password}));
+    }
+
     public async login(x: LoginDto): Promise<{
         jwt: string,
         functions: FunctionModelBasic[],
@@ -52,7 +77,7 @@ export class AuthenticationService {
     }> {
         let resAccount: AccountModel;
         let resFunctions: FunctionModelBasic[];
-        console.log(userName);
+
         return this.accountDao.findByUserNameAndServerResource(userName)
             .then(e => {
                 e.password = undefined;
@@ -72,6 +97,50 @@ export class AuthenticationService {
                     account: resAccount
                 };
             });
+    }
+
+    public async registerAndLogin(
+        userName: string,
+        email: string,
+        serverResource: string = 'local',
+        firstName: string = '',
+        lastName: string = '',
+        birthDate: Date = new Date(),
+        gender: string = '',
+        photoUrl: string = null,
+    ): Promise<string> {
+        let account: AccountModel = {
+            _id: new ObjectId(),
+            password: '',
+            userName: {
+                id: userName,
+                serverResource: serverResource
+            },
+            user: {
+                gender: gender,
+                lastName: lastName,
+                firstName: firstName,
+                birthDate: birthDate
+            },
+            email: email,
+            enabled: true,
+            functions: [],
+            roles: ['user'],
+            audit: new AuditModel(),
+            photo: photoUrl
+        };
+        return this.accountDao.findByUserNameAndServerResource(account.userName)
+            .then(e => e ? e : this.accountDao.insert(account))
+            .then(e => {
+                e.password = undefined;
+                e.enabled = undefined;
+                e.roles = undefined;
+                e.functions = undefined;
+                e.audit = undefined;
+                account = e;
+                return e;
+            }).then(e => this.accountDao.getAllFunctions(e.userName))
+            .then(e => tojwt(account, e));
     }
 
     public async github(userName: string): Promise<string> {
@@ -107,18 +176,19 @@ export class AuthenticationService {
             }).then(e => this.accountDao.getAllFunctions(e.userName))
             .then(e => tojwt(account, e));
     }
-    public async google(userName: string): Promise<string> {
+
+    public async google(email: string, firstName: string, lastName: string): Promise<string> {
         let account: AccountModel = {
             _id: new ObjectId(),
             password: '',
             userName: {
-                id: userName,
+                id: email,
                 serverResource: 'google'
             },
             user: {
                 gender: '',
-                lastName: '',
-                firstName: '',
+                lastName: firstName,
+                firstName: lastName,
                 birthDate: new Date()
             },
             email: '',
@@ -140,30 +210,7 @@ export class AuthenticationService {
             }).then(e => this.accountDao.getAllFunctions(e.userName))
             .then(e => tojwt(account, e));
     }
-    public async register(x: RegisterDto): Promise<{
-        jwt: string,
-        functions: { _id: string, methods: string[] }[],
-        account: AccountModel
-    }> {
-        const account: AccountModel = {
-            password: x.password,
-            userName: {id: x.userName, serverResource: 'local'},
-            user: {
-                gender: x.gender,
-                lastName: x.lastName,
-                firstName: x.firstName,
-                birthDate: x.birthDate
-            },
-            _id: new ObjectId(),
-            email: x.email,
-            enabled: true,
-            functions: [],
-            roles: ['user'],
-            audit: new AuditModel()
-        };
-        return this.accountDao.insert(account)
-            .then(e => this.login({user: e.userName.id, password: e.password}));
-    }
+
 
 }
 

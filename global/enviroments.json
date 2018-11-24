@@ -22,7 +22,13 @@
     },
     "google": {
       "clientId": "169588101511-s41mv83ehmd7d1e18liaos8uqrl1v505.apps.googleusercontent.com",
-      "secret": "UKCbrNz-s7fByse9LLYb2ynI"
+      "secret": "UKCbrNz-s7fByse9LLYb2ynI",
+      "redirect_uri":"http://localhost:3000/authentication/google"
+    },
+    "facebook":{
+      "clientId": "972932186189099",
+      "secret": "3f5781eeb24a6eb56ea309539a7a9d84",
+      "redirect_uri":"http://localhost:3000/authentication/facebook"
     }
   }
 }
