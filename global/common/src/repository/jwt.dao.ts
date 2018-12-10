@@ -3,7 +3,7 @@ import MongoConfig from '../config/mongo.config';
 
 export function hasFuntions(_id: string, path: string, method: string): Promise<any> {
 
-    return MongoConfig.db.collection('account').aggregate([
+    return MongoConfig.getDbMultitenant('common').collection('account').aggregate([
 
         {$match: {_id: new ObjectId(_id)}},
         {$lookup: {from: 'role', as: 'roles', foreignField: 'name', localField: 'roles'}},

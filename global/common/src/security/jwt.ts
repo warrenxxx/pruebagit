@@ -7,10 +7,12 @@ import {AuthorizationError} from '../errorHandling/Exceptions/authorization.erro
 import {AccountModel} from '../models/accountModel';
 import config from '../../../enviroments.json';
 import {FunctionModelBasic} from '../models/functionModel';
+import {Db} from 'mongodb';
 
 export interface Req extends Request {
     _id?: string;
     userName?: { id: string, serverResource: string };
+    db?: Db;
 }
 
 

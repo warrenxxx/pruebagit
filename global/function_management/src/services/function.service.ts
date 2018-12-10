@@ -4,7 +4,6 @@ import {ObjectNullError} from '../../../common/src/errorHandling/Exceptions/obje
 import {FunctionDao} from '../dao/function.dao';
 
 export class FunctionService extends BaseMongoService<FunctionModel> {
-
     private daoFunctions: FunctionDao;
 
     constructor() {

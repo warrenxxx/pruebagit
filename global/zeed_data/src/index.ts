@@ -17,6 +17,5 @@ MongoConfig.connect(config.mongo.url, config.mongo.db).then(e => {
     .then(e => MongoConfig.db.collection('account').deleteMany({}))
     .then(e => MongoConfig.db.collection('account').insertMany(zeedAccounts))
     .then(e => console.log('accounts inizializados correctamente'))
-
 ;
 

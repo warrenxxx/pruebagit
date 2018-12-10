@@ -3,12 +3,11 @@ import error from '../Errors.json';
 
 export class ObjectNotFoundError extends AppError {
 
-    private constructor(message: string, code: Number, userName: string) {
+    public constructor(message: string = 'El Objeto no Existe', code: Number = 70000, userName: string = '') {
         super(ObjectNotFoundError['name'], message, [], code, '', userName);
     }
 
     public static UserNotFoundException(userName: string): AppError {
-        // @ts-ignore
         const x: ErrorJson = error.UserNotFoundError;
         return new ObjectNotFoundError(x.message.replace('$name', userName), x.code, userName);
     }

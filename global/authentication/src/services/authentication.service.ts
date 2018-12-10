@@ -7,6 +7,16 @@ import {AccountModel} from '../../../common/src/models/accountModel';
 import {AuditModel} from '../../../common/src/models/audit.model';
 import {FunctionModelBasic} from '../../../common/src/models/functionModel';
 import {tojwt} from '../../../common/src/security/jwt';
+import {createTransport} from 'nodemailer';
+import {sign, verify} from 'jsonwebtoken';
+import {compare, hash} from 'bcrypt';
+
+import {Db} from 'mongodb';
+
+import MongoConfig from '../../../common/src/config/mongo.config';
+import config from '../../../enviroments.json';
+
+const db: Db = MongoConfig.getDbMultitenant('common');
 
 export class AuthenticationService {
 
@@ -15,49 +25,23 @@ export class AuthenticationService {
     constructor() {
     }
 
-    public async register(x: RegisterDto): Promise<{
-        jwt: string,
-        functions: { _id: string, methods: string[] }[],
-        account: AccountModel
-    }> {
-        const account: AccountModel = {
-            password: x.password,
-            userName: {id: x.userName, serverResource: 'local'},
-            user: {
-                gender: x.gender,
-                lastName: x.lastName,
-                firstName: x.firstName,
-                birthDate: x.birthDate
-            },
-            _id: new ObjectId(),
-            email: x.email,
-            enabled: true,
-            functions: [],
-            roles: ['user'],
-            audit: new AuditModel()
-        };
-        return this.accountDao.insert(account)
-            .then(e => this.login({user: e.userName.id, password: e.password}));
-    }
-
-    public async login(x: LoginDto): Promise<{
-        jwt: string,
-        functions: FunctionModelBasic[],
-        account: AccountModel
-    }> {
+    public async login(x: LoginDto): Promise<{ jwt: string, functions: FunctionModelBasic[], account: AccountModel }> {
         let resAccount: AccountModel;
         let resFunctions: FunctionModelBasic[];
-        return this.accountDao.findByUserNameAndServerResource({id: x.user, serverResource: 'local'})
-            .then(e => {
-                if (!e || x.password !== e.password)
+        return this.accountDao.findByUserNameAndServerResource(db, {id: x.user, serverResource: 'local'})
+            .then(e => compare(x.password, e.password)
+                .then(correct => {
+                    if (correct) return e;
                     throw AuthenticationError.LoginError(x.user);
+                }))
+            .then(e => {
                 e.password = undefined;
                 e.enabled = undefined;
                 e.roles = undefined;
                 e.functions = undefined;
                 e.audit = undefined;
                 resAccount = e;
-                return this.accountDao.getAllFunctions(e.userName);
+                return this.accountDao.getAllFunctions(db, e.userName);
             }).then(functions => {
                 resFunctions = functions;
                 return tojwt(resAccount, functions);
@@ -70,6 +54,104 @@ export class AuthenticationService {
             });
     }
 
+    public async register(token: string): Promise<{ jwt: string, functions: FunctionModelBasic[], account: AccountModel }> {
+        const x: RegisterDto = <RegisterDto>verify(token, config.privateKeyToConfimrEmail);
+        return hash(x.password, 5)
+            .then(password => {
+                const account: AccountModel = {
+                    password: password,
+                    userName: {id: x.userName, serverResource: 'local'},
+                    user: {
+                        gender: x.gender,
+                        lastName: x.lastName,
+                        firstName: x.firstName,
+                        birthDate: x.birthDate
+                    },
+                    _id: new ObjectId(),
+                    email: x.email,
+                    enabled: true,
+                    functions: [],
+                    roles: ['user'],
+                    audit: new AuditModel(),
+                    db: 'c0'
+                };
+                return account;
+            })
+            .then(account => this.accountDao.insert(db, account))
+            .then(e => this.login({user: e.userName.id, password: e.password}));
+    }
+
+    public async enviarConfirmacionEmail(register: RegisterDto): Promise<{ message: string }> {
+        const tokenR = sign(register, config.privateKeyToConfimrEmail, {expiresIn: '3600s'});
+        const transporter = createTransport({
+            service: config.email.server,
+            host: config.email.host,
+            auth: {
+                user: config.email.user,
+                pass: config.email.password
+            }
+        });
+        return new Promise<{ message: string }>((solve, err) => {
+            transporter.sendMail({
+                from: config.email.user,
+                to: register.email,
+                subject: 'Confirmar Email',
+                html: '<p>Pincha<a href="' + config.hostFront + '/authentication/register/' + tokenR + '"> a qui </a> para confirmar tu email</p>'
+            }, (error, info) => {
+                if (error)
+                    err({message: error});
+                else
+                    solve({message: info});
+            });
+        });
+
+    }
+
+    public async resetPassword(email: string): Promise<{ message: string }> {
+        let tokenR = '';
+        return this.accountDao.findByEmail(db, email)
+            .then(account => {
+                if (account.userName.serverResource !== 'local') {
+                    throw AuthenticationError.resetPasswordWithoutLocal();
+                }
+                return sign(
+                    {
+                        email: email,
+                        id: account._id,
+                        mensaje: 'no me hakees ps y si intentalo ps muajajjajaj'
+                    },
+                    config.privateKey,
+                    {expiresIn: '3600s'});
+            })
+            .then(token => {
+                tokenR = token;
+                return token;
+            })
+            .then(token => createTransport({
+                service: config.email.server,
+                host: config.email.host,
+                auth: {
+                    user: config.email.user,
+                    pass: config.email.password
+                }
+            }))
+            .then(transporter => new Promise<{ message: string }>((solve, err) => {
+                transporter.sendMail({
+                    from: config.email.user,
+                    to: email,
+                    subject: 'Reiniciar Password',
+                    // text: 'Hello world?' + config.hostFront + '/authentication/reset-password/' + tokenR
+                    html: '<p>Pincha<a href="' + config.hostFront + '/authentication/reset-password/' + tokenR + '"> a qui </a> para reiniciar tu password</p>'
+                    // html: '<a href="' + config.hostFront + '/authentication/reset-password/' + tokenR + '"></a>'
+                }, (error, info) => {
+                    if (error)
+                        err({message: error});
+                    else
+                        solve({message: info});
+                });
+            }));
+    }
+
     public async renovarToken(userName: { id: string, serverResource: string }): Promise<{
         jwt: string,
         functions: FunctionModelBasic[],
@@ -78,7 +160,7 @@ export class AuthenticationService {
         let resAccount: AccountModel;
         let resFunctions: FunctionModelBasic[];
 
-        return this.accountDao.findByUserNameAndServerResource(userName)
+        return this.accountDao.findByUserNameAndServerResource(db, userName)
             .then(e => {
                 e.password = undefined;
                 e.enabled = undefined;
@@ -86,7 +168,7 @@ export class AuthenticationService {
                 e.functions = undefined;
                 e.audit = undefined;
                 resAccount = e;
-                return this.accountDao.getAllFunctions(e.userName);
+                return this.accountDao.getAllFunctions(db, e.userName);
             }).then(functions => {
                 resFunctions = functions;
                 return tojwt(resAccount, functions);
@@ -129,8 +211,8 @@ export class AuthenticationService {
             audit: new AuditModel(),
             photo: photoUrl
         };
-        return this.accountDao.findByUserNameAndServerResource(account.userName)
-            .then(e => e ? e : this.accountDao.insert(account))
+        return this.accountDao.findByUserNameAndServerResource(db, account.userName)
+            .then(e => e ? e : this.accountDao.insert(db, account))
             .then(e => {
                 e.password = undefined;
                 e.enabled = undefined;
@@ -139,7 +221,7 @@ export class AuthenticationService {
                 e.audit = undefined;
                 account = e;
                 return e;
-            }).then(e => this.accountDao.getAllFunctions(e.userName))
+            }).then(e => this.accountDao.getAllFunctions(db, e.userName))
             .then(e => tojwt(account, e));
     }
 
@@ -163,8 +245,8 @@ export class AuthenticationService {
             roles: ['user'],
             audit: new AuditModel()
         };
-        return this.accountDao.findByUserNameAndServerResource(account.userName)
-            .then(e => e ? e : this.accountDao.insert(account))
+        return this.accountDao.findByUserNameAndServerResource(db, account.userName)
+            .then(e => e ? e : this.accountDao.insert(db, account))
             .then(e => {
                 e.password = undefined;
                 e.enabled = undefined;
@@ -173,7 +255,7 @@ export class AuthenticationService {
                 e.audit = undefined;
                 account = e;
                 return e;
-            }).then(e => this.accountDao.getAllFunctions(e.userName))
+            }).then(e => this.accountDao.getAllFunctions(db, e.userName))
             .then(e => tojwt(account, e));
     }
 
@@ -197,8 +279,8 @@ export class AuthenticationService {
             roles: ['user'],
             audit: new AuditModel()
         };
-        return this.accountDao.findByUserNameAndServerResource(account.userName)
-            .then(e => e ? e : this.accountDao.insert(account))
+        return this.accountDao.findByUserNameAndServerResource(db, account.userName)
+            .then(e => e ? e : this.accountDao.insert(db, account))
             .then(e => {
                 e.password = undefined;
                 e.enabled = undefined;
@@ -207,7 +289,7 @@ export class AuthenticationService {
                 e.audit = undefined;
                 account = e;
                 return e;
-            }).then(e => this.accountDao.getAllFunctions(e.userName))
+            }).then(e => this.accountDao.getAllFunctions(db, e.userName))
             .then(e => tojwt(account, e));
     }
 

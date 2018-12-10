@@ -27,7 +27,7 @@ export class AppError implements Error {
     }
 
     private saveError(): void {
-        MongoConfig.db.collection('error').insertOne(this).then();
+        // MongoConfig.db.collection('error').insertOne(this).then();
     }
 
 

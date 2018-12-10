@@ -1,24 +1,22 @@
-import {ObjectId} from 'mongodb';
-import MongoConfig from '../config/mongo.config';
+import {Db, ObjectId} from 'mongodb';
 import {BaseDao} from './base.dao';
+import {AuditModel} from '../models/audit.model';
 
-export class BaseMongoImpDao<T> implements BaseDao<T> {
+export class BaseMongoImpDao<T extends Documento> implements BaseDao<T> {
     protected readonly collection: string;
 
     constructor(collection: string) {
         this.collection = collection;
     }
 
-    count(): Promise<Number> {
-        return MongoConfig
-            .db
+    count(db: Db): Promise<Number> {
+        return db
             .collection(this.collection)
             .countDocuments();
     }
 
-    findAll(): Promise<T[]> {
-        return MongoConfig
-            .db
+    findAll(db: Db): Promise<T[]> {
+        return db
             .collection(this.collection)
             .find()
             .map(e => {
@@ -28,39 +26,51 @@ export class BaseMongoImpDao<T> implements BaseDao<T> {
             .toArray();
     }
 
-    findById(id: string | ObjectId): Promise<T | null> {
-        return MongoConfig
-            .db
+    findById(db: Db, id: string | ObjectId): Promise<T | null> {
+        return db
             .collection(this.collection)
             .findOne({'_id': id});
     }
 
-    insert(object: T): Promise<T> {
-        return MongoConfig
-            .db
+    insert(db: Db, object: T): Promise<T> {
+        return db
             .collection(this.collection)
             .insertOne(object)
             .then(e => e.ops[0]);
     }
 
-    removeById(id: string | ObjectId): Promise<number | undefined> {
-        return MongoConfig
-            .db
+    removeById(db: Db, id: string | ObjectId): Promise<number | undefined> {
+        return db
             .collection(this.collection)
             .deleteOne({'_id': id})
             .then(e => e.deletedCount);
     }
 
-    update(object: T): Promise<T> {
-        const id = (<any>object)['_id'];
-        // @ts-ignore
+    update(db: Db, object: T): Promise<T> {
+        const id = object._id;
+
         delete object._id;
-        return MongoConfig
-            .db
+        return db
             .collection(this.collection)
             .updateOne({'_id': id}, {$set: object})
             .then(e => {
                 return object;
             });
     }
+
+    existsById(db: Db, id: string): Promise<boolean> {
+        return db
+            .collection(this.collection)
+            .findOne({'_id': new ObjectId(id)})
+            .then(e => {
+                if (e) return true;
+                return false;
+            });
+    }
+
+}
+
+export interface Documento {
+    _id: ObjectId | string;
+    audit?: AuditModel;
 }

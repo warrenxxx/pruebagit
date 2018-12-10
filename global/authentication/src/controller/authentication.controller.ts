@@ -18,12 +18,13 @@ export class AuthenticationController {
     constructor() {
         this.router = Router();
         this.router.post('/login', this.login);
-        this.router.post('/register', this.register);
+        this.router.get('/register/:token', this.register);
+        this.router.post('/confirmEmail', this.confirmEmail);
         this.router.get('/refresh_token', fromJwt, this.refreshToken);
         this.router.get('/github', this.accessGitHub);
         this.router.get('/google', this.accessGoogle);
         this.router.get('/facebook', this.accessFacebook);
-
+        this.router.get('/reset/:email', this.resetPassword);
     }
 
     public refreshToken(req: Req, res: Response): void {
@@ -49,9 +50,9 @@ export class AuthenticationController {
     }
 
     public register(req: Request, res: Response): void {
-        Validate(req.body, RegisterDtoRules)
-            .then(e => <RegisterDto>e)
-            .then(e => service.register(e))
+        // Validate(req.body, RegisterDtoRules)
+        //     .then(e => <RegisterDto>e)
+        service.register(<string>req.params.token)
             .then(e => res.json(e))
             .catch(e => res.status(400).json(AppResponse.errorResponse(e)));
     }
@@ -82,7 +83,7 @@ export class AuthenticationController {
                     new Date(),
                     '',
                     e.avatar_url))
-            .then(e => res.redirect(config.hostFront + '/pages/auth/login/' + e))
+            .then(e => res.redirect(config.hostFront + '/authentication/login/' + e))
             .catch(e => {
                 res.status(400).send(AppResponse.errorResponse(e));
             });
@@ -125,7 +126,7 @@ export class AuthenticationController {
                     '',
                     e.image.url.substring(0, e.image.url.length - 2) + '160'
                 ))
-            .then(e => res.redirect(config.hostFront + '/pages/auth/login/' + e))
+            .then(e => res.redirect(config.hostFront + '/authentication/login/' + e))
             .catch(e => {
                 res.status(400).send(AppResponse.errorResponse(e));
             });
@@ -161,10 +162,27 @@ export class AuthenticationController {
                     moment(e.birthday, 'MM/DD/YYYY').toDate(),
                     e.gender,
                     e.picture.data.url))
-            .then(e => res.redirect(config.hostFront + '/pages/auth/login/' + e))
+            .then(e => res.redirect(config.hostFront + '/authentication/login/' + e))
             .catch(e => {
                 res.status(400).send(AppResponse.errorResponse(e));
             });
+
+    }
+
+    private resetPassword(req: Req, res: Response): void {
+        service.resetPassword(req.params.email)
+            .then(e => res.status(200).send(e))
+            .catch(e => {
+                res.status(400).send(AppResponse.errorResponse(e));
+            });
+    }
+
+    private confirmEmail(req: Req, res: Response): void {
+        Validate(req.body, RegisterDtoRules)
+            .then(e => <RegisterDto>e)
+            .then(e => service.enviarConfirmacionEmail(e))
+            .then(e => res.json(e))
+            .catch(e => res.status(400).json(AppResponse.errorResponse(e)));
 
     }
 }

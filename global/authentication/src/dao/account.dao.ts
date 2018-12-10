@@ -1,22 +1,34 @@
 import {BaseMongoImpDao} from '../../../common/src/repository/baseMongoImp.dao';
 import {AccountModel} from '../../../common/src/models/accountModel';
-import MongoConfig from '../../../common/src/config/mongo.config';
-import {FunctionModel, FunctionModelBasic} from '../../../common/src/models/functionModel';
+
+import {FunctionModelBasic} from '../../../common/src/models/functionModel';
+import {ObjectNotFoundError} from '../../../common/src/errorHandling/Exceptions/objectNotFound.error';
+import {Db} from 'mongodb';
 
 export class AccountDao extends BaseMongoImpDao<AccountModel> {
     constructor() {
         super('account');
     }
 
-    findByUserNameAndServerResource(userName: { id: string, serverResource: string }): Promise<AccountModel> {
-
-        return MongoConfig.db
+    findByUserNameAndServerResource(db: Db, userName: { id: string, serverResource: string }): Promise<AccountModel> {
+        return db
             .collection(this.collection)
             .findOne({'userName': userName});
     }
 
-    getAllFunctions(userName: { id: string, serverResource: string }): Promise<FunctionModelBasic[]> {
-        return MongoConfig.db
+    findByEmail(db: Db, email: string): Promise<AccountModel> {
+        return db
+            .collection(this.collection)
+            .findOne({'email': email})
+            .then(e => {
+                if (e)
+                    return e;
+                else throw ObjectNotFoundError.UserNotFoundException(email);
+            });
+    }
+
+    getAllFunctions(db: Db, userName: { id: string, serverResource: string }): Promise<FunctionModelBasic[]> {
+        return db
             .collection(this.collection)
             .aggregate([
                 {$match: {userName: userName}},

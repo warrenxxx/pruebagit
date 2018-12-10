@@ -1,7 +1,19 @@
 {
   "mongo": {
     "url": "mongodb://localhost:27017",
-    "db": "dbMicap"
+    "db": "dbMicap",
+    "common": "mongodb://localhost:27017/common",
+    "c0": "mongodb://localhost:27017/common",
+    "c1": "mongodb://localhost:27017/c1",
+    "c2": "mongodb://localhost:27017/c2",
+    "c3": "mongodb://localhost:27017/c3",
+    "c4": "mongodb://localhost:27017/c4",
+    "c5": "mongodb://localhost:27017/c5",
+    "c6": "mongodb://localhost:27017/c6",
+    "c7": "mongodb://localhost:27017/c7",
+    "c8": "mongodb://localhost:27017/c8",
+    "c9": "mongodb://localhost:27017/c9",
+    "c10": "mongodb://localhost:27017/c10"
   },
   "mongoTest": {
     "url": "mongodb://localhost:27017",
@@ -11,9 +23,12 @@
     "authentication": 3000,
     "userManagement": 3001,
     "roleManagement": 3002,
-    "functionManagement": 3003
+    "functionManagement": 3003,
+    "productoManagement": 3004
   },
   "privateKey": "clver princada con erroes",
+  "privateKeyToResetPaaword": "clver princada con erroes 2",
+  "privateKeyToConfimrEmail": "clver princada con erroes 2 me lo lloro",
   "hostFront": "http://localhost:4200",
   "oauth": {
     "github": {
@@ -23,12 +38,18 @@
     "google": {
       "clientId": "169588101511-s41mv83ehmd7d1e18liaos8uqrl1v505.apps.googleusercontent.com",
       "secret": "UKCbrNz-s7fByse9LLYb2ynI",
-      "redirect_uri":"http://localhost:3000/authentication/google"
+      "redirect_uri": "http://localhost:3000/authentication/google"
     },
-    "facebook":{
+    "facebook": {
       "clientId": "972932186189099",
       "secret": "3f5781eeb24a6eb56ea309539a7a9d84",
-      "redirect_uri":"http://localhost:3000/authentication/facebook"
+      "redirect_uri": "http://localhost:3000/authentication/facebook"
     }
+  },
+  "email": {
+    "user": "100505@unsaac.edu.pe",
+    "password": "alizonmelani123k",
+    "host": "smtp.gmail.com",
+    "server": "gmail"
   }
 }

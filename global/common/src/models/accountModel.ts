@@ -12,6 +12,7 @@ export interface AccountModel {
     user: UserModel;
     audit: AuditModel;
     photo?: string;
+    db?: string;
 }
 
 export interface UserModel {

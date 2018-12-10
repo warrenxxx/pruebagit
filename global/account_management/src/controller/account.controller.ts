@@ -25,19 +25,19 @@ export class AccountController {
     public insert(req: Req, res: Response): void {
         Validate(req.body, AccountDtoRules)
             .then(e => dtoToAccount(e))
-            .then(e => service.insert(e, req._id))
+            .then(e => service.insert(req.db, e, req._id))
             .then(e => res.status(200).send(e))
             .catch(e => res.status(400).send(AppResponse.errorResponse(e)));
     }
 
-    public readOne(req: Request, res: Response): void {
-        service.readOne(new ObjectId(req.params.id))
+    public readOne(req: Req, res: Response): void {
+        service.readOne(req.db, new ObjectId(req.params.id))
             .then(e => res.status(200).send(e))
             .catch(e => res.status(400).send(AppResponse.errorResponse(e)));
     }
 
     public readAll(req: Req, res: Response): void {
-        service.readAll()
+        service.readAll(req.db)
             .then(e => res.status(200).send(e))
             .catch(e => res.status(400).send(AppResponse.errorResponse(e)));
     }
@@ -45,13 +45,13 @@ export class AccountController {
     public update(req: Req, res: Response): void {
         Validate(req.body, AccountDtoRules)
             .then(e => dtoToAccount(e, new ObjectId(req.params.id)))
-            .then(e => service.update(e, req._id))
+            .then(e => service.update(req.db, e, req._id))
             .then(e => res.status(200).send(e))
             .catch(e => res.status(400).send(AppResponse.errorResponse(e)));
     }
 
-    public delete(req: Request, res: Response): void {
-        service.delete(new ObjectId(req.params.id))
+    public delete(req: Req, res: Response): void {
+        service.delete(req.db, new ObjectId(req.params.id))
             .then(e => res.status(200).send({count: e}))
             .catch(e => {
                 res.status(400).send(AppResponse.errorResponse(e));

@@ -6,15 +6,16 @@ import {ObjectId} from 'bson';
 export async function Validate(x: any, constraint: any): Promise<any> {
     try {
         return isValid(x, constraint);
-    }catch (e) {
+    } catch (e) {
         throw e;
     }
 
 }
 
-export function isString(inp: any): null | any {
-    return validate.isString(inp) ? inp : null;
+export function isString(inp: any, min = 0, max = 300): null | any {
+    return validate.isString(inp) && (<string>inp).length >= min && (<string>inp).length <= max ? inp : null;
 }
+
 
 export function isStringRegex(inp: any, pattern: RegExp): null | any {
     return validate.isString(inp) && pattern.test(inp) ? inp : null;
@@ -27,6 +28,7 @@ export function isNumber(inp: any): null | any {
 export function isBoolean(inp: any): null | any {
     return validate.isBoolean(inp) ? inp : null;
 }
+
 export function isObjectId(inp: any): null | any {
     return ObjectId.isValid(inp) ? new ObjectId(inp) : null;
 }
@@ -41,7 +43,7 @@ export function isDateTime(inp: any): null | any {
     return date.isValid() ? date.toDate() : null;
 }
 
-export function     isValid(object: any, rules: any): any {
+export function isValid(object: any, rules: any): any {
     const res: any = {};
     for (const param in rules) {
         if (validate.isArray(rules[param])) {

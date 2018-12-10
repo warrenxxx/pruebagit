@@ -1,15 +1,19 @@
 import {ObjectId} from 'bson';
+import {Documento} from './baseMongoImp.dao';
+import {Db} from 'mongodb';
 
-export interface BaseDao<T> {
-    insert(object: T): Promise<T>;
+export interface BaseDao<T extends Documento> {
+    insert(db: Db, object: T): Promise<T>;
 
-    update(object: T): Promise<T>;
+    update(db: Db, object: T): Promise<T>;
 
-    removeById(id: string|ObjectId): Promise<Number | undefined>;
+    removeById(db: Db, id: string | ObjectId): Promise<Number | undefined>;
 
-    findById(id: string|ObjectId): Promise<T | null>;
+    findById(db: Db, id: string | ObjectId): Promise<T | null>;
 
-    findAll(): Promise<T[]>;
+    findAll(db: Db): Promise<T[]>;
 
-    count(): Promise<Number>;
+    count(db: Db): Promise<Number>;
+
+    existsById(db: Db, id: string): Promise<Boolean>;
 }
